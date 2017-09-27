@@ -1,0 +1,7 @@
+[[game]]
+Name = "Thomas"
+Port = 4711
+
+[[game]]
+Name = "Nicolas"
+Port = 4420
