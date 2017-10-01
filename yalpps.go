@@ -4,35 +4,23 @@ import (
 	"flag"
 	"log"
 	"net/http"
-
-	"github.com/BurntSushi/toml"
-	"github.com/gorilla/websocket"
 )
 
 // Command line flags
-var upgrader = websocket.Upgrader{} // use default options
 var addr = flag.String("addr", "localhost:8080", "http service address")
 var configpath = flag.String("serverconfig", "portlist.toml", "Path to your config file")
 var runserver = flag.Bool("server", false, "Run YALPPS as server")
 
-type Games struct {
-	games []Game
-}
-
 func main() {
-
 	// Parsing command line flags
 	flag.Parse()
 
-	if *runserver {
+	// Running as server if desired
+	if *runserver == true {
 		// Decoding the config file
-		var games Games
-		_, err := toml.DecodeFile(*configpath, &games)
-		if err != nil {
-			log.Fatalln("", err)
-		}
+		config := NewConfig(*configpath)
 
-		http.HandleFunc("/yalpps", games.yalpps)
+		http.HandleFunc("/yalpps", config.Serve)
 		log.Fatal(http.ListenAndServe(*addr, nil))
 	}
 
