@@ -16,7 +16,7 @@ var configpath = flag.String("serverconfig", "portlist.toml", "Path to your conf
 var runserver = flag.Bool("server", false, "Run YALPPS as server")
 
 type Games struct {
-	Game []Game
+	games []Game
 }
 
 func main() {

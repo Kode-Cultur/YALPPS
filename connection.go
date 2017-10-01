@@ -86,7 +86,7 @@ func (g *Games) yalpps(w http.ResponseWriter, r *http.Request) {
 	}
 	defer con.Close()
 
-	for _, game := range g.Game {
+	for _, game := range g.games {
 		client := &YalppsClient{
 			con:  con,
 			game: &game,
