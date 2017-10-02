@@ -1,5 +1,7 @@
 # YALPPS #
 
+![travis build status](https://travis-ci.org/Kode-Cultur/YALPPS.svg?branch=master)
+
 is **yet another LAN party port scanner**. The idea behind this
 project is to speed up the setup phase of LAN parties by providing a
 simple-to-use binary that will check whether any of the TCP or UDP
