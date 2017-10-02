@@ -1,0 +1,7 @@
+language: go
+
+go:
+  - 1.9
+
+# We don't have tests yet, so just build for now.
+script: go build -v
