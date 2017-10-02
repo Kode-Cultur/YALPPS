@@ -38,9 +38,9 @@ func (conf *Config) Serve(w http.ResponseWriter, r *http.Request) {
 	defer con.Close()
 
 	for _, game := range conf.list {
-		client := NewClient(con, &game)
-		client.checkInboundCon()
-		client.checkOutboundCon()
+		server := NewServer(con, &game)
+		server.checkInboundCon()
+		server.checkOutboundCon()
 	}
 
 }

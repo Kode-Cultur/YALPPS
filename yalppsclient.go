@@ -57,7 +57,7 @@ func (server *YalppsServer) checkInboundCon() {
 	}
 
 	// Writing a message
-	server.con.WriteMessage(websocket.TextMessage, []byte("Hello"))
+	server.WriteMessage(websocket.TextMessage, []byte("Hello"))
 
 	// Accepting the next connection to the listener
 	t, err := ln.Accept()
@@ -73,7 +73,7 @@ func (server *YalppsServer) checkInboundCon() {
 
 func (server *YalppsServer) checkOutboundCon() {
 	// Writing a message
-	server.con.WriteMessage(websocket.TextMessage, []byte("Hello"))
+	server.WriteMessage(websocket.TextMessage, []byte("Hello"))
 
 	// Reading answer
 	if _, _, err := server.con.ReadMessage(); err != nil {
