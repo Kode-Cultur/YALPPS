@@ -10,43 +10,43 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type YalppsClient struct {
+type YalppsServer struct {
 	con  *websocket.Conn
 	game *Game
 }
 
-// NewClient will return a new YalppsClient instance
-func NewClient(con *websocket.Conn, game *Game) *YalppsClient {
-	return &YalppsClient{
+// NewServer will return a new YalppsServer instance
+func NewServer(con *websocket.Conn, game *Game) *YalppsServer {
+	return &YalppsServer{
 		con:  con,
 		game: game,
 	}
 }
 
 // CloseConnection will close current connection
-func (client *YalppsClient) CloseConnection() {
-	if err := client.con.Close(); err != nil {
+func (server *YalppsServer) CloseConnection() {
+	if err := server.con.Close(); err != nil {
 		log.Fatalln("Failed to close connections:", err)
 	}
 }
 
 // WriteMessage will write a message into the current connection
-func (client *YalppsClient) WriteMessage(m []byte) {
-	err := client.con.WriteMessage(websocket.TextMessage, m)
+func (server *YalppsServer) WriteMessage(m []byte) {
+	err := server.con.WriteMessage(websocket.TextMessage, m)
 	if err != nil {
 		log.Printf("Failed to send message: %v", err)
 	}
 }
 
-func (client *YalppsClient) checkInboundCon() {
+func (server *YalppsServer) checkInboundCon() {
 
 	// Setting up TCP listener
 	ln, err := net.ListenTCP("tcp", &net.TCPAddr{
 		IP:   net.IPv4(0, 0, 0, 0),
-		Port: client.game.Port,
+		Port: server.game.Port,
 	})
 	if err != nil {
-		log.Printf("TCP Error on ports: %d: %v", client.game.Port, err)
+		log.Printf("TCP Error on ports: %d: %v", server.game.Port, err)
 		return
 	}
 	defer ln.Close()
@@ -57,7 +57,7 @@ func (client *YalppsClient) checkInboundCon() {
 	}
 
 	// Writing a message
-	client.con.WriteMessage(websocket.TextMessage, []byte("Hello"))
+	server.con.WriteMessage(websocket.TextMessage, []byte("Hello"))
 
 	// Accepting the next connection to the listener
 	t, err := ln.Accept()
@@ -71,23 +71,23 @@ func (client *YalppsClient) checkInboundCon() {
 	fmt.Println("Inbound works")
 }
 
-func (client *YalppsClient) checkOutboundCon() {
+func (server *YalppsServer) checkOutboundCon() {
 	// Writing a message
-	client.con.WriteMessage(websocket.TextMessage, []byte("Hello"))
+	server.con.WriteMessage(websocket.TextMessage, []byte("Hello"))
 
 	// Reading answer
-	if _, _, err := client.con.ReadMessage(); err != nil {
+	if _, _, err := server.con.ReadMessage(); err != nil {
 		log.Println("Error:", err)
 	}
 
 	// Scanning ports
-	client.ScanPort(client.con.RemoteAddr().String(), client.game.Port)
+	server.ScanPort(server.con.RemoteAddr().String(), server.game.Port)
 
 	fmt.Println("outbound works")
 }
 
 // Scan port will scan the given port on the given host
-func (client *YalppsClient) ScanPort(host string, port int) bool {
+func (server *YalppsServer) ScanPort(host string, port int) bool {
 	ps := portscanner.NewPortScanner(host, time.Duration(time.Second*10))
 	return ps.IsOpen(port)
 }
