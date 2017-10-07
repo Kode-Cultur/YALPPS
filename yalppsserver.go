@@ -30,14 +30,6 @@ func (server *YalppsServer) CloseConnection() {
 	}
 }
 
-// WriteMessage will write a message into the current connection
-func (server *YalppsServer) WriteMessage(m []byte) {
-	err := server.con.WriteMessage(websocket.TextMessage, m)
-	if err != nil {
-		log.Printf("Failed to send message: %v", err)
-	}
-}
-
 func (server *YalppsServer) checkInboundCon() {
 
 	// Setting up TCP listener
@@ -57,7 +49,13 @@ func (server *YalppsServer) checkInboundCon() {
 	}
 
 	// Writing a message
-	server.WriteMessage([]byte("Hello"))
+	m := &Message{
+		Command: SCAN_PORT,
+		Port:    server.game.Port,
+	}
+	if err := m.Write(server.con); err != nil {
+		log.Println("write:", err)
+	}
 
 	// Accepting the next connection to the listener
 	t, err := ln.Accept()
@@ -73,21 +71,19 @@ func (server *YalppsServer) checkInboundCon() {
 
 func (server *YalppsServer) checkOutboundCon() {
 	// Writing a message
-	server.WriteMessage([]byte("Hello"))
-
-	// Reading answer
-	if _, _, err := server.con.ReadMessage(); err != nil {
-		log.Println("Error:", err)
+	m := &Message{
+		Command: LISTEN_PORT,
+		Port:    server.game.Port,
+	}
+	if err := m.Write(server.con); err != nil {
+		log.Println("write:", err)
+	}
+	if err := m.Read(server.con); err != nil {
+		log.Println("read:", err)
 	}
 
 	// Scanning ports
 	server.ScanPort(server.con.RemoteAddr().String(), server.game.Port)
 
 	fmt.Println("outbound works")
-}
-
-// Scan port will scan the given port on the given host
-func (server *YalppsServer) ScanPort(host string, port int) bool {
-	ps := portscanner.NewPortScanner(host, time.Duration(time.Second*10))
-	return ps.IsOpen(port)
 }

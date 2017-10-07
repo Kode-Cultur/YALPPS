@@ -2,8 +2,11 @@ package main
 
 import (
 	"flag"
-	"log"
 	"net/http"
+
+	"github.com/anvie/port-scanner"
+	"log"
+	"time"
 )
 
 // Command line flags
@@ -24,4 +27,15 @@ func main() {
 		log.Fatal(http.ListenAndServe(*addr, nil))
 	}
 
+	client, err := NewClient(*addr)
+	if err != nil {
+		log.Fatalln("client:", err)
+	}
+
+	client.Handler()
+}
+
+func ScanPort(host string, port int) bool {
+	ps := portscanner.NewPortScanner(host, time.Duration(time.Second*10))
+	return ps.IsOpen(port)
 }
